@@ -29,12 +29,8 @@ using System.Net;
 public class WebService : System.Web.Services.WebService
 {
     public static string jsonString;
-    //throws error - public string ConnectionStringHome = System.Configuration.ConfigurationManager.ConnectionStrings["SuiteCRM_Dashboard"].ToString();
-    //System.NullReferenceException: Object reference not set to an instance of an object.
-    public string ConnectionStringHome = "Data Source=.;Initial Catalog=SuiteCRM_Dashboard; Integrated Security=False;User ID=Mara.Sanders;Password=P@ssword1";
-    //"Data Source=.;Initial Catalog=MARS2;integrated security=False;User ID=MarsUser;Password=P@ssWord86452664327";//"Provider=sqloledb;Data Source=.;Initial Catalog=MARS2;User Id=qwerty;Password=123123;";
-    //host=10.1.10.67;Port=3306;oldguids=true";Initial Catalog=bitnami_suitecrm;
-
+    public string ConnectionStringHome = System.Configuration.ConfigurationManager.ConnectionStrings["SuiteCRM_Dashboard"].ToString();
+    
 
     public WebService()
     {
@@ -45,12 +41,11 @@ public class WebService : System.Web.Services.WebService
     public DataTable GetData(string TableOrSPName, string SP_Param, bool bIsStoredProcedure)
     {
         DataTable dataTable = new DataTable();
-        string connect = ConnectionStringHome;
-        //   using (SqlConnection conn = new SqlConnection(connect)) - changed to MySql
-          using (MySqlConnection conn = new MySqlConnection(connect))
-   //     using (MySqlConnection conn = new MySql.Data.MySqlClient.MySqlConnection(connect)) - doesn't make a visible difference
+      
+        using (MySqlConnection conn = new MySql.Data.MySqlClient.MySqlConnection(ConnectionStringHome))
         {
             MySqlCommand cmd = conn.CreateCommand();
+            MySqlDataAdapter da = new MySqlDataAdapter(cmd);
             cmd.CommandText = "select * from " + TableOrSPName;
 
             cmd.CommandType = CommandType.Text;
@@ -68,8 +63,10 @@ public class WebService : System.Web.Services.WebService
             }
 
             //OleDbDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
-            MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+     //       MySqlDataAdapter da = new MySqlDataAdapter(cmd);
             //dataTable.Load(dr);
+            //da.Fill(dataTable);
+            
             da.Fill(dataTable);
             conn.Close();
             da.Dispose();
